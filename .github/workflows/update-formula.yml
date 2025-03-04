@@ -1,0 +1,52 @@
+name: Update Formula
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [release-created]
+
+jobs:
+  update-formula:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tap
+        uses: actions/checkout@v3
+
+      - name: Configure Git
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
+      - name: Fetch latest release info
+        id: latest_release
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/mendesbarreto/citizenship-tracker-cli/releases/latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract release info
+        id: release_info
+        run: |
+          echo "::set-output name=tag_name::$(echo '${{ steps.latest_release.outputs.data }}' | jq -r '.tag_name')"
+          echo "::set-output name=tarball_url::$(echo '${{ steps.latest_release.outputs.data }}' | jq -r '.tarball_url')"
+
+      - name: Calculate SHA256
+        id: sha
+        run: |
+          TARBALL_URL="https://github.com/mendesbarreto/citizenship-tracker-cli/archive/refs/tags/${{ steps.release_info.outputs.tag_name }}.tar.gz"
+          SHA=$(curl -L $TARBALL_URL | shasum -a 256 | cut -d ' ' -f 1)
+          echo "::set-output name=sha::$SHA"
+
+      - name: Update formula
+        run: |
+          TAG="${{ steps.release_info.outputs.tag_name }}"
+          VERSION="${TAG#v}"
+          SHA="${{ steps.sha.outputs.sha }}"
+
+          sed -i "s|url \".*\"|url \"https://github.com/mendesbarreto/citizenship-tracker-cli/archive/refs/tags/${TAG}.tar.gz\"|" citizen.rb
+          sed -i "s|sha256 \".*\"|sha256 \"${SHA}\"|" citizen.rb
+
+          git add citizen.rb
+          git commit -m "Update formula to ${TAG}"
+          git push
