@@ -18,6 +18,7 @@ class Citizen < Formula
 
   service do
     run [opt_bin/"citizenship-tracker-cli", "run", "--headless"]
+    run_type :interval
     interval 10800 # Run every 3 hours
     log_path var/"log/citizen.log"
     error_log_path var/"log/citizen.error.log"
