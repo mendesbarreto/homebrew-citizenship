@@ -1,8 +1,8 @@
 class Citizen < Formula
   desc "Track your citizenship application progress from command line"
   homepage "https://github.com/mendesbarreto/citizenship-tracker-cli"
-  url "https://github.com/mendesbarreto/citizenship-tracker-cli/archive/refs/tags/v0.0.7.tar.gz"
-  sha256 "db61417a9d7b90e7ba1aa03e18e50af5d421b617f17671102168f1ab4cbb2ad4"
+  url "https://github.com/mendesbarreto/citizenship-tracker-cli/archive/refs/tags/v0.0.10.tar.gz"
+  sha256 "ec404c447187c54266623a86294859e47ba04b938477ee0e72fce365acb6b3b6"
   license "MIT"
   head "https://github.com/mendesbarreto/citizenship-tracker-cli.git", branch: "main"
 
