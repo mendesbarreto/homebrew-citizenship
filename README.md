@@ -13,7 +13,9 @@ brew install citizen
 
 Check your citizenship application status:
 ```bash
-citizen status
+citizen run --status
+#or
+citizen run --headless
 ```
 
 Run automatically every 3 hours:
